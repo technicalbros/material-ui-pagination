@@ -1,0 +1,5 @@
+{
+    "name": "@technicalbros/material-ui-pagination",
+    "version": "1.0.0",
+    "main": "./src/index.tsx"
+}
