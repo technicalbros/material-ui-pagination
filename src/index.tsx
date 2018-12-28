@@ -1,7 +1,5 @@
 import * as React from "react";
 import {Button, IconButton, withStyles} from "@material-ui/core";
-import {ReactChild, ReactChildren} from "react";
-import {updateState} from "react-extended-component/src";
 
 // @ts-ignore
 @withStyles(theme => ({
