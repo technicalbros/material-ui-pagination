@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./",
     "jsx": "react",
     "target": "es5",
     "lib": [
@@ -10,5 +11,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "declaration": true
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src"
+  ]
 }

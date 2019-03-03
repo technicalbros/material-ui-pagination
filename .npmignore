@@ -1,1 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
+tsconfig.json
+yarn.lock
+src
+.idea
