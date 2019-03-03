@@ -1,13 +1,13 @@
 {
   "name": "@technicalbros/material-ui-pagination",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./src/index.tsx",
   "scripts": {
     "watch": "tsc --watch"
   },
-  "peerDependencies": {
-    "@material-ui/core": "^3.7.1",
-    "react": "^16.7.0"
+  "dependencies": {
+    "@material-ui/core": "^3.x",
+    "react": "^16.x"
   },
   "devDependencies": {
     "@types/react": "^16.7.18",
