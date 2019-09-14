@@ -1,1 +1,1 @@
-export import Pagination = require("./Pagination");
+export { default as Pagination } from "./Pagination";
