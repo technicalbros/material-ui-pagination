@@ -1,6 +1,6 @@
 {
   "name": "@technicalbros/material-ui-pagination",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "./src/index.tsx",
   "scripts": {
     "watch": "tsc --watch"
