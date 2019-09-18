@@ -1,4 +1,4 @@
 export default interface PageChangeData {
-    page: number,
-    offset: number
+    page: number;
+    offset: number;
 }

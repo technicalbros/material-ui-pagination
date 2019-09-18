@@ -40,22 +40,17 @@ var Pagination = /** @class */ (function (_super) {
     }
     Object.defineProperty(Pagination.prototype, "totalPages", {
         get: function () {
-            var _a = this.props, limit = _a.limit, total = _a.total, page = _a.page;
-            var total_pages = Math.ceil(total / limit);
-            return total_pages;
+            var _a = this.props, limit = _a.limit, total = _a.total;
+            return Math.ceil(total / limit);
         },
         enumerable: true,
         configurable: true
     });
     Pagination.prototype.nextPage = function () {
-        this.props.onChange({
-            page: this.props.page + 1
-        });
+        this.changePage(this.props.page + 1);
     };
     Pagination.prototype.prevPage = function () {
-        this.props.onChange({
-            page: this.props.page - 1
-        });
+        this.changePage(this.props.page - 1);
     };
     Pagination.prototype.renderPages = function () {
         var _this = this;
@@ -77,7 +72,17 @@ var Pagination = /** @class */ (function (_super) {
             }
         }
         var _loop_1 = function (i) {
-            pages.push(React.createElement(core_1.IconButton, { onClick: function () { return _this.props.onChange({ page: i }); }, className: this_1.props.classes.button + " " + (page === i && this_1.props.classes.activePage), key: i }, i));
+            pages.push(React.createElement(core_1.IconButton, { onClick: function () {
+                    if (page === i) {
+                        _this.setState({
+                            tmpPage: String(page),
+                            showDialog: true
+                        });
+                    }
+                    else {
+                        _this.changePage(i);
+                    }
+                }, className: this_1.props.classes.button + " " + (page === i && this_1.props.classes.activePage), key: i }, i));
         };
         var this_1 = this;
         for (var i = start_page; i <= end_page; i++) {
@@ -85,9 +90,22 @@ var Pagination = /** @class */ (function (_super) {
         }
         return pages;
     };
+    Pagination.prototype.closeDialog = function () {
+        this.setState({ showDialog: false });
+    };
+    Pagination.prototype.changePage = function (page) {
+        var _a = this.props, limit = _a.limit, onChange = _a.onChange;
+        if (page > this.totalPages)
+            page = this.totalPages;
+        if (page < 1)
+            page = 1;
+        if (this.props.page !== page)
+            onChange({ page: page, offset: limit * (page - 1) });
+        this.setState({ showDialog: false });
+    };
     Pagination.prototype.render = function () {
         var _this = this;
-        var _a = this.props, page = _a.page, total = _a.total, limit = _a.limit, hideIfEmpty = _a.hideIfEmpty;
+        var _a = this.props, page = _a.page, hideIfEmpty = _a.hideIfEmpty;
         var totalPages = this.totalPages;
         return (totalPages > 1 || !hideIfEmpty) ? React.createElement("div", null,
             React.createElement(core_1.IconButton, { onClick: function () { return _this.prevPage(); }, disabled: page <= 1, className: "" + this.props.classes.button },
@@ -98,7 +116,18 @@ var Pagination = /** @class */ (function (_super) {
             (page < (totalPages - 3) && totalPages > 5) && React.createElement(core_1.IconButton, { className: "" + this.props.classes.button },
                 React.createElement("i", { className: "fa fa-ellipsis-h" })),
             React.createElement(core_1.IconButton, { onClick: function () { return _this.nextPage(); }, disabled: page >= totalPages, className: "" + this.props.classes.button },
-                React.createElement("i", { className: "fa fa-chevron-right" }))) : null;
+                React.createElement("i", { className: "fa fa-chevron-right" })),
+            React.createElement(core_1.Dialog, { open: !!this.state.showDialog, onClose: this.closeDialog.bind(this) },
+                React.createElement("form", { onSubmit: function (e) {
+                        e.preventDefault();
+                        _this.changePage(Number(_this.state.tmpPage));
+                    } },
+                    React.createElement(core_1.DialogContent, null,
+                        React.createElement("h5", null, "Page Number"),
+                        React.createElement(core_1.TextField, { autoFocus: true, fullWidth: true, placeholder: "Type page number here...", value: this.state.tmpPage, type: "number", onChange: function (e) { return _this.setState({ tmpPage: e.target.value }); } })),
+                    React.createElement(core_1.DialogActions, null,
+                        React.createElement(core_1.Button, { size: "small", onClick: this.closeDialog.bind(this) }, "Cancel"),
+                        React.createElement(core_1.Button, { size: "small", variant: "contained", color: "primary", type: "submit" }, "Jump"))))) : null;
     };
     Pagination = __decorate([
         core_1.withStyles(function (theme) { return ({
@@ -110,7 +139,11 @@ var Pagination = /** @class */ (function (_super) {
             },
             activePage: {
                 backgroundColor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText
+                color: theme.palette.primary.contrastText,
+                "&:hover": {
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                }
             }
         }); })
     ], Pagination);

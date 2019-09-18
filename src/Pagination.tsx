@@ -1,5 +1,16 @@
 import * as React from "react";
-import {IconButton, withStyles} from "@material-ui/core";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    IconButton,
+    Input,
+    TextField, Typography,
+    withStyles
+} from "@material-ui/core";
+import PaginationProps from "./PaginationProps";
+import PaginationState from "./PaginationState";
 
 // @ts-ignore
 @withStyles(theme => ({
@@ -11,53 +22,40 @@ import {IconButton, withStyles} from "@material-ui/core";
     },
     activePage: {
         backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText
+        color: theme.palette.primary.contrastText,
+        "&:hover": {
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+        }
     }
 }))
-export default class Pagination extends React.Component {
+export default class Pagination extends React.Component<PaginationProps, PaginationState> {
 
-    props: {
-        classes?: {
-            button: string,
-            activePage: string
-        },
-        hideIfEmpty?: boolean,
-        limit: number,
-        total: number,
-        page: number,
-        onChange: (data: { page: number, offset?: number }) => void
-    }
-
-    state: any = {
+    state: PaginationState = {
         pages: []
-    }
+    };
 
     get totalPages(): number {
-        const {limit, total, page} = this.props;
-        const total_pages = Math.ceil(total / limit)
-        return total_pages;
+        const {limit, total} = this.props;
+        return Math.ceil(total / limit);
     }
 
     nextPage() {
-        this.props.onChange({
-            page: this.props.page + 1
-        });
+        this.changePage(this.props.page + 1);
     }
 
     prevPage() {
-        this.props.onChange({
-            page: this.props.page - 1
-        });
+        this.changePage(this.props.page - 1);
     }
 
     renderPages(): any {
         const {limit, total, page} = this.props;
         const total_pages = this.totalPages;
         let pages = [];
-        let start_page = page - 2
+        let start_page = page - 2;
         let end_page = start_page + 4;
         if (end_page > total_pages) {
-            end_page = total_pages
+            end_page = total_pages;
             if (total_pages >= 5) {
                 start_page = end_page - 4;
             }
@@ -71,7 +69,16 @@ export default class Pagination extends React.Component {
         for (let i = start_page; i <= end_page; i++) {
             pages.push(
                 <IconButton
-                    onClick={() => this.props.onChange({page: i})}
+                    onClick={() => {
+                        if (page === i) {
+                            this.setState({
+                                tmpPage: String(page),
+                                showDialog: true
+                            })
+                        } else {
+                            this.changePage(i);
+                        }
+                    }}
                     className={`${this.props.classes.button} ${page === i && this.props.classes.activePage}`}
                     key={i}>
                     {i}
@@ -81,9 +88,27 @@ export default class Pagination extends React.Component {
         return pages;
     }
 
+    private closeDialog() {
+        this.setState({showDialog: false});
+    }
+
+    private changePage(page) {
+        const {limit, onChange} = this.props;
+
+        if (page > this.totalPages)
+            page = this.totalPages;
+        if (page < 1)
+            page = 1;
+
+        if (this.props.page !== page)
+            onChange({page, offset: limit * (page - 1)});
+
+        this.setState({showDialog: false});
+    }
+
     render(): React.ReactNode {
 
-        const {page, total, limit, hideIfEmpty} = this.props;
+        const {page, hideIfEmpty} = this.props;
         const {totalPages} = this;
 
         return (totalPages > 1 || !hideIfEmpty) ? <div>
@@ -112,6 +137,26 @@ export default class Pagination extends React.Component {
                 className={`${this.props.classes.button}`}>
                 <i className="fa fa-chevron-right"/>
             </IconButton>
+            <Dialog open={!!this.state.showDialog} onClose={this.closeDialog.bind(this)}>
+                <form onSubmit={e => {
+                    e.preventDefault();
+                    this.changePage(Number(this.state.tmpPage))
+                }}>
+                    <DialogContent>
+                        <h5>Page Number</h5>
+                        <TextField
+                            autoFocus
+                            fullWidth
+                            placeholder="Type page number here..." value={this.state.tmpPage} type="number"
+                            onChange={e => this.setState({tmpPage: e.target.value})}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button size="small" onClick={this.closeDialog.bind(this)}>Cancel</Button>
+                        <Button size="small" variant="contained" color="primary" type="submit">Jump</Button>
+                    </DialogActions>
+                </form>
+            </Dialog>
         </div> : null
     }
 }
