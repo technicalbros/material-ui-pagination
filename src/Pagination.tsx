@@ -5,8 +5,7 @@ import {
     DialogActions,
     DialogContent,
     IconButton,
-    Input,
-    TextField, Typography,
+    TextField,
     withStyles
 } from "@material-ui/core";
 import PaginationProps from "./PaginationProps";
